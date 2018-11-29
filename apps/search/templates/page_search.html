@@ -1,0 +1,27 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block page_head %}
+    {% include 'include/common/top.html' %}
+    {% include 'include/navgation.html' %}
+{% endblock %}
+{% block page_css %}
+    <link rel="stylesheet" href="{% static 'page_search.css' %}">
+{% endblock %}
+{% block page_main %}
+    {% if shops %}
+        <ul class="clearfix">
+            {% for shop in shops %}
+            <li class="shop_search_img">
+                <img src="/static/img/middle/{{ shop.img.shop_img_id }}.jpg">
+                <p>{{ shop.promote_price }}</p>
+                <p>{{ shop.name }}</p>
+                <a href="#">天猫专卖</a>
+                <p><span>月成交量:</span><span>评论:</span></p>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>抱歉!目前没有您查找的商品</p>
+    {% endif %}
+
+{% endblock %}

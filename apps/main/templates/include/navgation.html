@@ -1,0 +1,16 @@
+{% load staticfiles %}
+<div>
+    <img src="{% static 'img/imgs/logo.gif' %}" >
+    <div class="input-group">
+        <form action="{% url 'search' %}" method="get">
+            <input type="text" name="keyword" placeholder="请输入您要搜索的宝贝">
+            <input type="submit" value="搜索">
+        </form>
+    </div>
+    <ul class="nav nav-pills">
+        {% for nav in nav_list %}
+            <li><a href="#">{{ nav.nav_name }}</a></li>
+
+        {% endfor %}
+    </ul>
+</div>

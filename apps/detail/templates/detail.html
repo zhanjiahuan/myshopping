@@ -1,0 +1,84 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block page_head %}
+    {% include 'include/common/top.html' %}
+    {% include 'include/navgation.html' %}
+{% endblock %}
+
+{% block page_css %}
+    <link rel="stylesheet" href="{% static '/css/detail.css' %}">
+{% endblock %}
+
+{% block page_jq %}
+    <script type="text/javascript">
+    $(function () {
+        $('.shop_img_small>li').mouseover(function () {
+            let index = $(this).index();
+            for (let i = 0; i < $('.shop_img_middle>li').length; i++) {
+                if(index===i){
+                    $('.shop_img_middle>li')[i].style.setProperty('display','block')
+                }else {
+                    $('.shop_img_middle>li')[i].style.setProperty('display','none')
+                }
+
+            }
+        });
+        $('.details').on('click',function () {
+            $('.details').addClass('border');
+            $('.evaluate').removeClass('border');
+            $('.shop_detail_value').show();
+            $('.shop_detail_review').hide();
+        });
+        $('.evaluate').on('click',function () {
+            $('.evaluate').addClass('border');
+            $('.details').removeClass('border');
+            $('.shop_detail_review').show();
+            $('.shop_detail_value').hide();
+        })
+
+    })
+
+    </script>
+{% endblock %}
+
+{% block page_main %}
+    {% include 'include/shop_content.html' %}
+    <div class="shop_detail_main_more">
+        <div class="shop_detail_main_all">
+            <span class="details"><a href="#">商品详情</a></span>
+            <span class="evaluate"><a href="#">评价{{ reviews|length }}</a></span>
+            <div class="shop_detail_main_product">
+
+                <div class="shop_detail_value">
+                    <span>产品参数</span>
+                    <div>
+                    {% for value in values %}
+                        <span class="shop_detail_property_name">
+                            <span class="one">{{ value.property.name }}:</span>
+                            <span class="two">{{ value.value }}</span>
+                        </span>
+                    {% endfor %}
+                    </div>
+                </div>
+                <div class="shop_detail_review">
+                    {% for review in reviews %}
+                        <p>
+                        {{ review.content }}
+                        {{ review.create_date|date:'Y-m-d' }}
+                        {{ review.user.user.name }}
+                        </p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="shop_detail_img_big">
+            {% for img in shop.imgs %}
+                {% if img.type == 'type_detail' %}
+                    <img src="/static/img/detail/{{ img.shop_img_id }}.jpg">
+                {% endif %}
+            {% endfor %}
+
+        </div>
+    </div>
+
+{% endblock %}
