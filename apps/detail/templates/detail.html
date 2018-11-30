@@ -11,32 +11,53 @@
 
 {% block page_jq %}
     <script type="text/javascript">
-    $(function () {
-        $('.shop_img_small>li').mouseover(function () {
-            let index = $(this).index();
-            for (let i = 0; i < $('.shop_img_middle>li').length; i++) {
-                if(index===i){
-                    $('.shop_img_middle>li')[i].style.setProperty('display','block')
-                }else {
-                    $('.shop_img_middle>li')[i].style.setProperty('display','none')
+
+        $(function () {
+            $('.shop_img_small>li').mouseover(function () {
+                let index = $(this).index();
+                for (let i = 0; i < $('.shop_img_middle>li').length; i++) {
+                    if (index === i) {
+                        $('.shop_img_middle>li')[i].style.setProperty('display', 'block')
+                    } else {
+                        $('.shop_img_middle>li')[i].style.setProperty('display', 'none')
+                    }
+
                 }
+            });
+            $('.details').on('click', function () {
+                $('.details').addClass('border');
+                $('.evaluate').removeClass('border');
+                $('.shop_detail_value').show();
+                $('.shop_detail_review').hide();
+            });
+            $('.evaluate').on('click', function () {
+                $('.evaluate').addClass('border');
+                $('.details').removeClass('border');
+                $('.shop_detail_review').show();
+                $('.shop_detail_value').hide();
+            });
+        });
 
-            }
-        });
-        $('.details').on('click',function () {
-            $('.details').addClass('border');
-            $('.evaluate').removeClass('border');
-            $('.shop_detail_value').show();
-            $('.shop_detail_review').hide();
-        });
-        $('.evaluate').on('click',function () {
-            $('.evaluate').addClass('border');
-            $('.details').removeClass('border');
-            $('.shop_detail_review').show();
-            $('.shop_detail_value').hide();
+        $(function () {
+            $('#buy').click(function () {
+                {#   往服务器提交数据#}
+                let number = $('#number').val();
+                let shop_id = $(this).attr('shopid');
+                data = {
+                    number: number,
+                    shop_id: shop_id
+                };
+                $.get('{% url 'add' %}', data, function (result) {
+                    if (result && result.status === 200) {
+                        let number = $('#car_number').text();
+                        number += result.data;
+                        $('#car_number').text(number)
+                    } else if (result.status === 302) {
+                        window.location.href = result.content
+                    }
+                })
+            })
         })
-
-    })
 
     </script>
 {% endblock %}
@@ -52,20 +73,20 @@
                 <div class="shop_detail_value">
                     <span>产品参数</span>
                     <div>
-                    {% for value in values %}
-                        <span class="shop_detail_property_name">
+                        {% for value in values %}
+                            <span class="shop_detail_property_name">
                             <span class="one">{{ value.property.name }}:</span>
                             <span class="two">{{ value.value }}</span>
                         </span>
-                    {% endfor %}
+                        {% endfor %}
                     </div>
                 </div>
                 <div class="shop_detail_review">
                     {% for review in reviews %}
                         <p>
-                        {{ review.content }}
-                        {{ review.create_date|date:'Y-m-d' }}
-                        {{ review.user.user.name }}
+                            {{ review.content }}
+                            {{ review.create_date|date:'Y-m-d' }}
+                            {{ review.user.user.name }}
                         </p>
                     {% endfor %}
                 </div>

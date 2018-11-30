@@ -23,6 +23,7 @@ def detail(request):
                 reviews = Review.objects.filter(shop_id=shop_id)
                 return render(request, "detail.html", locals())
         except Exception as e:
-            pass
-    else:
-        return render(request, 'detail.html')
+            print(e)
+            return render(request, 'error.html')
+
+    return render(request, 'error.html')

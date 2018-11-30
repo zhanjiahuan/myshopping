@@ -1,6 +1,5 @@
-from django.contrib.auth.views import login
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login, logout
 
 
 # 注册
@@ -16,20 +15,21 @@ def login_view(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
         next = request.POST.get('next')
-        user = authenticate(request, username=username, password=password)
+        user = authenticate(username=username, password=password)
         if user:
             login(request, user)
             next = next if next else '/'
             return redirect(next)
         else:
-            pass
+            return render(request, 'login.html', {'next': next})
     else:
-        pass
+        return render(request, 'login.html', {'next': next})
 
 
 def register_view(requesr):
     pass
 
 
-def logout_view(requesr):
-    pass
+def logout_view(request):
+    logout(request)
+    return redirect('/')

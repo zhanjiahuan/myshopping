@@ -25,7 +25,7 @@ urlpatterns = [
     url('^$', views.index),
     url('detail/', include('apps.detail.urls')),
     url('search/', include('apps.search.urls')),
-    url('account/', include('apps.account')),
-    url('cart/', include('apps.cart')),
+    url('account/', include('apps.account.urls')),
+    url('cart/', include('apps.cart.urls')),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
