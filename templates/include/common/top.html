@@ -12,7 +12,7 @@
     {% endif %}
 
         <a href="#" class="order">我的订单</a>
-        <a href="#" id="car"> <span class="glyphicon glyphicon-shopping-cart"></span>购物车
-        {% if user.is_authenticated %} <span id="car_number">0</span>件 {% endif %}
+        <a href="{% url 'list' %}" id="car"> <span class="glyphicon glyphicon-shopping-cart"></span>购物车
+            {% if user.is_authenticated %} <span id="car_number">0</span>件 {% endif %}
         </a>
 </div>

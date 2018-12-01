@@ -28,15 +28,16 @@
 .cate{
     position: absolute;
     left: 15px;
-    top: 134px;
+    top: 255px;
     z-index: 2;
+
 }
 .cate>ul{
     background: red;
     height: 500px;
 }
 .cate>ul>li{
-    padding: 3px 20px;
+    padding: 3px 40px;
 
 }
 .goods>p{

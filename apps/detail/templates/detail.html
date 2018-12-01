@@ -40,29 +40,38 @@
 
         $(function () {
             $('#buy').click(function () {
+
                 {#   往服务器提交数据#}
                 let number = $('#number').val();
                 let shop_id = $(this).attr('shopid');
                 data = {
                     number: number,
-                    shop_id: shop_id
+                    shop_id: shop_id,
+                    csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
                 };
-                $.get('{% url 'add' %}', data, function (result) {
+
+                $.post('{% url 'add' %}',data, function (result) {
+                    result = eval('(' + result.content + ')');
+                    console.log('result',result.data,typeof result.data);
                     if (result && result.status === 200) {
                         let number = $('#car_number').text();
-                        number += result.data;
+                        number = parseInt(number);
+                        console.log('number',number,typeof number);
+                        console.log(number += result.data);
+                        number += result.data +1;
                         $('#car_number').text(number)
                     } else if (result.status === 302) {
                         window.location.href = result.content
                     }
                 })
             })
-        })
+        });
 
     </script>
 {% endblock %}
 
 {% block page_main %}
+    {% csrf_token %}
     {% include 'include/shop_content.html' %}
     <div class="shop_detail_main_more">
         <div class="shop_detail_main_all">

@@ -1,13 +1,16 @@
+import datetime
+import json
+import random
 from functools import wraps
-
 from django.contrib.auth.decorators import login_required
+from django.core import cache
 from django.db.models import F
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
-
-
-from apps.main.models import ShopCar
-# from shopping import settings
+from django_ajax.decorators import ajax
+from django_redis import get_redis_connection
+from apps.main.models import ShopCar, Order
+from django.db import transaction
 
 """
 表
@@ -45,13 +48,14 @@ status
 
 # 添加商品到购物车
 # 浏览器的一种机制
-
+@ajax
+@login_required
 def add_car(request):
     result = {'status': 200, 'msg': 'ok'}
-    if request.method == 'GET':
+    if request.method == 'POST':
         try:
-            number = request.GET.get("number")
-            shop_id = request.GET.get('shop_id')
+            number = request.POST.get("number")
+            shop_id = request.POST.get('shop_id')
             # 如果商品存在用户的购物车更新的操作
             # string list  hash set
             car = ShopCar.objects.filter(shop_id=shop_id, user_id=request.user.id, status=1)
@@ -73,10 +77,16 @@ def add_car(request):
         return JsonResponse(result)
 
 
-
+@login_required
 def list(reqeust):
     car_list = ShopCar.objects.filter(user_id=reqeust.user.id)
-    return  render(reqeust,'cars.html')
+    for car in car_list:
+        car.shop.img = car.shop.image_set \
+            .filter(shop=car.shop) \
+            .values_list('shop_img_id', flat=True) \
+            .first()
+    return render(reqeust, 'car.html', {'car_list': car_list})
+
 
 # 修改购物车商品的数量
 def update(reqeust):
@@ -85,3 +95,45 @@ def update(reqeust):
 
 def delete(request):
     pass
+
+
+# 开始事务
+@ajax
+@login_required
+def confirm(request):
+    if request.method == 'POST':
+        cars_str = request.POST.get('car')
+        if cars_str:
+            # [{carid:1,number:10}]
+            cars = json.loads(cars_str)
+            try:
+                # 开启事务
+                with transaction.atomic():
+                    # 生成订单
+                    oid = product_order(request, cars)
+                    #      做事务相关的操作
+                    for car in cars:
+                        ShopCar.objects.filter(car_id=car.get('car_id')).update(number=car.get('num'), order_id=oid)
+                #    生成订单的操作
+                return {'oid': oid}
+            except Exception as e:
+                transaction.rollback()
+        else:
+            pass
+
+
+# 生成订单信息
+def product_order(request, cars):
+    # 第一步生成订单号  全站必须唯一   尽量大于8位
+    user_id = request.user.id
+    order_code = f"{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}{random.randint(100000,999999)}"
+    order = Order(order_code=order_code, user_id=user_id)
+    order.save()
+    return order.oid
+
+
+@login_required
+def confirm1(request):
+    oid = request.GET.get('oid')
+    shops = ShopCar.objects.filter(order_id=oid)
+    return render(request, 'confirm.html', {'shops': shops})
