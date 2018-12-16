@@ -208,7 +208,7 @@ LOGIN_URL = '/account/login/'
 # 支付宝注册应用生成的IP
 APP_ID = '2016092300580718'
 
-# 沙箱环境支付网关
+# 沙箱环境支付网关就是沙箱那面那个关口
 PAY_URL_DEV = 'https://openapi.alipaydev.com/gateway.do'
 # 正式支付的网关
 PAY_URL = 'https://openapi.alipay.com/gateway.do'
